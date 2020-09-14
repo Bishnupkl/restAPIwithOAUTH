@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
+use Dotenv\Validator;
 use Illuminate\Http\Request;
+use App\Http\Resources\Product as ProductResource;
 
 class ProductController extends Controller
 {
@@ -14,7 +17,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
+        $products = Product::all();
+        return $this->sendResponse(ProductResource::collection($products), 'Products retrieved succesfully');
     }
 
     /**
@@ -35,7 +39,19 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'name' => 'required',
+            'details' => 'required',
+
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error',$validator->errors);
+        }
+        $product = Product::create($input);
+        return $this->sendResponse(new ProductResource($product), 'Product created succesfully');
+
     }
 
     /**
