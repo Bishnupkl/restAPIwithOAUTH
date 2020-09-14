@@ -62,7 +62,13 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        //
+        $product = Product::find($id);
+
+        if (is_null($product)) {
+            return $this->sendError('Product not found.');
+        }
+
+        return $this->sendResponse(new ProductResource($product), 'Product retrieved successfully.');
     }
 
     /**
@@ -83,9 +89,25 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Product $product)
     {
-        //
+        $input = $request->all();
+
+        $validator = Validator::make($input, [
+            'name' => 'required',
+            'detail' => 'required'
+        ]);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
+
+        $product->name = $input['name'];
+        $product->detail = $input['detail'];
+        $product->save();
+
+        return $this->sendResponse(new ProductResource($product), 'Product updated successfully.');
+
     }
 
     /**
@@ -94,8 +116,10 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Product $product)
     {
-        //
+        $product->delete();
+
+        return $this->sendResponse([], 'Product deleted successfully.');
     }
 }
