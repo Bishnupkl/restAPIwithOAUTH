@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\API;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
 use Dotenv\Validator;
 use Illuminate\Http\Request;
+use Laravel\Passport\HasApiTokens;
 use Illuminate\Support\Facades\Auth;
 
 class RegisterController extends Controller
@@ -14,14 +14,14 @@ class RegisterController extends Controller
      * @param Request $request
      * @return mixed
      */
-    public function registers(Request  $request)
+    public function register(Request  $request)
     {
         $validator = Validator::make($request->all(), [
-                'name' => 'required',
-                'email' => 'required|email',
-                'password' => 'required',
-                'c_password' => 'required|same:password',
-            ]);
+            'name' => 'required',
+            'email' => 'required|email',
+            'password' => 'required',
+            'c_password' => 'required|same:password',
+        ]);
 
         if ($validator->fails()) {
             return $this->sendError('Validation Error.', $validator->errors());
@@ -49,3 +49,4 @@ class RegisterController extends Controller
 
     }
 }
+
